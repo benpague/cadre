@@ -1,33 +1,66 @@
 import os
-import settings
-import pandas as pd
 import sqlite3
-import csv
+import pandas as pd
 import settings
-from dateutil.parser import parse
+import dateutil
+
+cols = ["SERIES","MONTH","YEAR","INST_NAME","PRIMARY_CASE","SECONDARY_CASE","PATAGE","PATSEX","CLASS_DEF"]
+
+# concatenate data files in csv or xls(x) format to a dataframe
+def concatenate():
+    files = os.listdir(settings.DATA_DIR)
+    full = []
+    for f in files:
+        if f.endswith('csv'):
+            dat = pd.read_csv(os.path.join(settings.DATA_DIR, f), index_col=False)
+            full.append(dat)
+        else:
+            dat = pd.read_excel(os.path.join(settings.DATA_DIR, f), index_col=False)
+            full.append(dat)
+
+    full_data = pd.concat(full, axis=0)
+    return(full_data)
+
+
+# deduplicate concatenated data
+def dedup(df):
+    df_dedup = df.drop_duplicates(subset=['SERIES'], keep='last')
+    return(df_dedup)
 
 def year(x):
-    date = parse(x)
-    return(date.year)
+    from dateutil.parser import parse
+    x = str(x)
+    dat = parse(x)
+    return(dat.year)
 
 def month(x):
-    date = parse(x)
-    return(date.month)
+    from dateutil.parser import parse
+    x = str(x)
+    dat = parse(x)
+    return(dat.month)
 
 
-def unlock_db(db_filename):
-    '''Replace db_filename with the name of SQLite3 db'''
-    conn = sqlite3.connect(db_filename)
+# create the sqlite db
+def db_unlock(db_file):
+    conn = sqlite3.connect(os.path.join(settings.PROCESSED_DIR, db_file))
     conn.commit()
     conn.close()
 
-def create_table():
-    df = pd.read_csv(os.path.join(settings.DATA_DIR,"claims.csv"))
-    df["YEAR"] = df["DATE_ADM"].map(lambda x: year(x))
-    df["MONTH"] = df["DATE_ADM"].map(lambda x: month(x))
-    unlock_db(os.path.join(settings.PROCESSED_DIR,"claims.db"))
-    df.to_sql(os.path.join(settings.PROCESSED_DIR, 'claims'), conn, if_exists='replace',index=False)
+
+# populate the sqlite db
+def create_table(df, db):
+    conn = sqlite3.connect(os.path.join(settings.PROCESSED_DIR, db))
+    df.to_sql('claims', conn, if_exists='replace', index=False)
+    conn.commit()
+    conn.close()
+
 
 if __name__ == "__main__":
-    create_table()
+    df_con = concatenate()
+    df_cadr = dedup(df_con)
+    df_cadr["MONTH"]= df_dup["DATE_ADM"].map(lambda x: month(x))
+    df_cadr["YEAR"] = df_dup["DATE_ADM"].map(lambda x: year(x))
+    df_cadr = df_cadr[cols]
+    db_unlock('cadre.db')
+    create_table(df_cadr, 'cadre.db')
 

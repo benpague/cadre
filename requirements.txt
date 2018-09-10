@@ -1,8 +1,11 @@
+os
 pandas
-matplotlib
-scikit-learn
-numpy
-ipython
-scipy
 sqlite3
-csv
+datetime
+dateutil
+scikit-learn
+matplotlib
+
+
+
+
