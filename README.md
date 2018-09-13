@@ -32,7 +32,7 @@ Download the data
  - RAM 16GB or higher
  
  - Install 
-    - download and install anaconda 64bit https://www.anaconda.com/download/#windows
+    - download and install anaconda 3.* 64bit https://www.anaconda.com/download/#windows
     - use anaconda prompt.
     - create virtual environment
         - get into the folder by `cd cadre`.
