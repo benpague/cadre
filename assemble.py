@@ -12,7 +12,7 @@ def concatenate():
     full = []
     for f in files:
         if f.endswith('csv'):
-            dat = pd.read_csv(os.path.join(settings.DATA_DIR, f), index_col=False)
+            dat = pd.read_csv(os.path.join(settings.DATA_DIR, f), index_col=False, encoding='latin1')
             full.append(dat)
         else:
             dat = pd.read_excel(os.path.join(settings.DATA_DIR, f), index_col=False)
