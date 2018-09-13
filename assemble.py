@@ -18,7 +18,7 @@ def concatenate():
             dat = pd.read_excel(os.path.join(settings.DATA_DIR, f), index_col=False)
             full.append(dat)
 
-    full_data = pd.concat(full, axis=0)
+    full_data = pd.concat(full, axis=0, sort=False)
     return(full_data)
 
 
@@ -58,8 +58,8 @@ def create_table(df, db):
 if __name__ == "__main__":
     df_con = concatenate()
     df_cadr = dedup(df_con)
-    df_cadr["MONTH"]= df_dup["DATE_ADM"].map(lambda x: month(x))
-    df_cadr["YEAR"] = df_dup["DATE_ADM"].map(lambda x: year(x))
+    df_cadr["MONTH"]= df_cadr["DATE_ADM"].map(lambda x: month(x))
+    df_cadr["YEAR"] = df_cadr["DATE_ADM"].map(lambda x: year(x))
     df_cadr = df_cadr[cols]
     db_unlock('cadre.db')
     create_table(df_cadr, 'cadre.db')
