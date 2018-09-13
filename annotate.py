@@ -1,6 +1,8 @@
 import pandas as pd
 import sqlite3
 import os
+import settings
+
 
 def cases_year():
     cases = dict()
